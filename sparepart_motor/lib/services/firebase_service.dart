@@ -26,4 +26,10 @@ class FirebaseService {
   static Future<String?> getToken() async {
     return await _messaging.getToken();
   }
+
+  static Future<void> sendNotification(String token, String title, String body) async {
+    // This would typically be done from a server
+    // For demo purposes, we'll just print the notification
+    print('Sending notification to $token: $title - $body');
+  }
 }

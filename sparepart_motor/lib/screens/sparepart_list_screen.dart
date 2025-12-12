@@ -51,7 +51,7 @@ class SparepartListScreen extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) => Dialog(
-                        child: Container(
+                        child: SizedBox(
                           width: 400,
                           height: 600,
                           child: SparepartDetailScreen(sparepart: sparepart),

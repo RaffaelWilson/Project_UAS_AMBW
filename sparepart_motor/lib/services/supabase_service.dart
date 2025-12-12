@@ -18,4 +18,15 @@ class SupabaseService {
   SupabaseClient get client => Supabase.instance.client;
   User? get currentUser => client.auth.currentUser;
   bool get isLoggedIn => currentUser != null;
+
+  // Method untuk memastikan real-time connection aktif
+  void ensureRealtimeConnection() {
+    final channel = client.channel('public:user_profiles');
+    if (channel.socket.isConnected) {
+      print('Realtime connection is active');
+    } else {
+      print('Realtime connection is not active, reconnecting...');
+      client.realtime.connect();
+    }
+  }
 }

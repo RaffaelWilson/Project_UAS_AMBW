@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'services/supabase_service.dart';
 import 'services/firebase_service.dart';
 import 'providers/auth_provider.dart';
@@ -7,8 +8,7 @@ import 'providers/cart_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/sparepart_provider.dart';
 import 'providers/order_provider.dart';
-import 'screens/login_screen.dart';
-import 'screens/home_screen.dart';
+import 'widgets/role_aware_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +21,30 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen untuk perubahan auth state
+    SupabaseService().client.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      if (event == AuthChangeEvent.signedIn) {
+        // Reload profile saat user sign in
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.read<AuthProvider>().reloadUserProfile();
+          }
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +73,7 @@ class MyApp extends StatelessWidget {
               ),
               useMaterial3: true,
             ),
-            home: Consumer<AuthProvider>(
-              builder: (context, auth, _) {
-                return auth.isLoggedIn ? const HomeScreen() : const LoginScreen();
-              },
-            ),
+            home: const RoleAwareWrapper(),
           );
         },
       ),

@@ -5,10 +5,12 @@ import '../services/supabase_service.dart';
 class OrderProvider with ChangeNotifier {
   final _supabase = SupabaseService();
   List<Order> _orders = [];
+  List<Order> _allOrders = [];
   bool _isLoading = false;
   String? _errorMessage;
 
   List<Order> get orders => _orders;
+  List<Order> get allOrders => _allOrders;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -74,6 +76,30 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
+  Future<void> fetchAllOrders() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await _supabase.client
+          .from('orders')
+          .select()
+          .order('created_at', ascending: false);
+      
+      _allOrders = (response as List)
+          .map((json) => Order.fromJson(json))
+          .toList();
+      
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> updateOrderStatus(int orderId, String status) async {
     try {
       await _supabase.client
@@ -81,6 +107,7 @@ class OrderProvider with ChangeNotifier {
           .update({'status': status})
           .eq('id', orderId);
       await fetchOrders();
+      await fetchAllOrders();
       return true;
     } catch (e) {
       _errorMessage = e.toString();

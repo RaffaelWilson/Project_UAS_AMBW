@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/order_provider.dart';
+import 'order_detail_screen.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -98,6 +99,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                     backgroundColor: _getStatusColor(order.status),
                   ),
+                  onTap: () async {
+                    final result = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => OrderDetailScreen(order: order),
+                      ),
+                    );
+                    if (result == true) {
+                      provider.fetchOrders();
+                    }
+                  },
                 ),
               );
             },

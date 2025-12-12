@@ -1,3 +1,4 @@
-2025/12/12-15:44:00.742 4184 Reusing MANIFEST C:\Users\raffa\AppData\Local\Temp\flutter_tools.cf00872f\flutter_tools_chrome_device.49648f84\Default\Local Storage\leveldb/MANIFEST-000001
-2025/12/12-15:44:00.748 4184 Recovering log #3
-2025/12/12-15:44:00.750 4184 Reusing old log C:\Users\raffa\AppData\Local\Temp\flutter_tools.cf00872f\flutter_tools_chrome_device.49648f84\Default\Local Storage\leveldb/000003.log 
+2025/12/12-18:22:24.058 513c Reusing MANIFEST C:\Users\raffa\AppData\Local\Temp\flutter_tools.84d83994\flutter_tools_chrome_device.a2419579\Default\Local Storage\leveldb/MANIFEST-000001
+2025/12/12-18:22:24.063 513c Recovering log #4
+2025/12/12-18:22:24.066 513c Reusing old log C:\Users\raffa\AppData\Local\Temp\flutter_tools.84d83994\flutter_tools_chrome_device.a2419579\Default\Local Storage\leveldb/000004.log 
+2025/12/12-18:22:24.067 513c Delete type=0 #3

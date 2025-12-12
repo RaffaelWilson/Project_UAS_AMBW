@@ -7,7 +7,6 @@ import 'sparepart_list_screen.dart';
 import 'cart_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
-import 'admin_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,14 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const AdminScreen()),
-              );
-            },
-          ),
+
         ],
       ),
       body: _screens[_selectedIndex],

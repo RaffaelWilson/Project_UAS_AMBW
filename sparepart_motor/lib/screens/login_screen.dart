@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import 'home_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -32,15 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordController.text,
     );
 
-    if (success && mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else if (mounted) {
+    if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(authProvider.errorMessage ?? 'Login gagal')),
       );
     }
+    // RoleAwareWrapper akan handle redirect otomatis
   }
 
   @override
@@ -119,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: const Text('Belum punya akun? Daftar'),
                   ),
+
                 ],
               ),
             ),
