@@ -4,7 +4,6 @@ import 'dart:convert';
 class StorageService {
   static const String _themeKey = 'theme_mode';
   static const String _cartKey = 'cart_items';
-  static const String _fcmTokenKey = 'fcm_token';
 
   static Future<bool> saveThemeMode(bool isDark) async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,16 +25,6 @@ class StorageService {
     final cartString = prefs.getString(_cartKey);
     if (cartString == null) return [];
     return List<Map<String, dynamic>>.from(jsonDecode(cartString));
-  }
-
-  static Future<bool> saveFCMToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.setString(_fcmTokenKey, token);
-  }
-
-  static Future<String?> getFCMToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_fcmTokenKey);
   }
 
   static Future<bool> clearAll() async {

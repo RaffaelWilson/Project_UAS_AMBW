@@ -12,15 +12,12 @@ import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
   await SupabaseService.initialize();
-  
   try {
     await FirebaseService.initialize();
   } catch (e) {
-    print('Firebase initialization failed: $e');
+    print('Firebase error: $e');
   }
-  
   runApp(const MyApp());
 }
 
