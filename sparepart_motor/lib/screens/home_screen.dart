@@ -39,18 +39,28 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sparepart Motor'),
+        title: const Text(
+          'Sparepart Motor',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.red,
+        elevation: 8,
+        shadowColor: Colors.black.withOpacity(0.5),
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           Consumer<ThemeProvider>(
             builder: (context, theme, _) {
               return IconButton(
-                icon: Icon(theme.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+                icon: Icon(
+                  theme.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                  color: Colors.white,
+                ),
                 onPressed: () => theme.toggleTheme(),
               );
             },
           ),
           IconButton(
-            icon: const Icon(Icons.admin_panel_settings),
+            icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const AdminScreen()),

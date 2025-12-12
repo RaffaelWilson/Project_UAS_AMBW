@@ -48,9 +48,14 @@ class SparepartListScreen extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => SparepartDetailScreen(sparepart: sparepart),
+                    showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+                        child: Container(
+                          width: 400,
+                          height: 600,
+                          child: SparepartDetailScreen(sparepart: sparepart),
+                        ),
                       ),
                     );
                   },

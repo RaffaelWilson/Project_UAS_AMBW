@@ -34,6 +34,8 @@ class CartScreen extends StatelessWidget {
                   return Card(
                     margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     child: ListTile(
+                      contentPadding: const EdgeInsets.all(8),
+                      isThreeLine: true,
                       leading: item.sparepart.imageUrl != null
                           ? CachedNetworkImage(
                               imageUrl: item.sparepart.imageUrl!,
@@ -47,12 +49,14 @@ class CartScreen extends StatelessWidget {
                       title: Text(item.sparepart.name),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('Rp ${item.sparepart.price.toStringAsFixed(0)}'),
                           Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.remove_circle_outline),
+                                icon: const Icon(Icons.remove_circle_outline, size: 20),
                                 onPressed: () {
                                   if (item.quantity > 1) {
                                     cart.updateQuantity(
@@ -61,10 +65,12 @@ class CartScreen extends StatelessWidget {
                                     );
                                   }
                                 },
+                                padding: const EdgeInsets.all(4),
+                                constraints: const BoxConstraints(),
                               ),
                               Text('${item.quantity}'),
                               IconButton(
-                                icon: const Icon(Icons.add_circle_outline),
+                                icon: const Icon(Icons.add_circle_outline, size: 20),
                                 onPressed: () {
                                   if (item.quantity < item.sparepart.stock) {
                                     cart.updateQuantity(
@@ -73,23 +79,31 @@ class CartScreen extends StatelessWidget {
                                     );
                                   }
                                 },
+                                padding: const EdgeInsets.all(4),
+                                constraints: const BoxConstraints(),
                               ),
                             ],
                           ),
                         ],
                       ),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Rp ${item.totalPrice.toStringAsFixed(0)}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => cart.removeItem(item.sparepart.id),
-                          ),
-                        ],
+                      trailing: SizedBox(
+                        width: 80,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Rp ${item.totalPrice.toStringAsFixed(0)}',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                              onPressed: () => cart.removeItem(item.sparepart.id),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
