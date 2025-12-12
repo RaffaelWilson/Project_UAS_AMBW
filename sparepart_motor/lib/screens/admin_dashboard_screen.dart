@@ -5,10 +5,8 @@ import '../providers/sparepart_provider.dart';
 import '../providers/order_provider.dart';
 import '../providers/theme_provider.dart';
 import '../models/sparepart.dart';
-import '../models/order.dart';
 import 'order_detail_screen.dart';
 import 'package:image_picker/image_picker.dart';
-import '../services/supabase_service.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -27,7 +25,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SparepartProvider>().fetchSpareparts();
       context.read<OrderProvider>().fetchAllOrders();
-      context.read<AuthProvider>().reloadUserProfile();
     });
   }
 
@@ -55,7 +52,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               );
             },
           ),
-
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
@@ -131,55 +127,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   }
 
   Widget _buildOrderTab() {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: _fetchOrdersWithUserEmail(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return Consumer<OrderProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        
-        if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error, color: Colors.red, size: 64),
-                const SizedBox(height: 16),
-                Text('Error: ${snapshot.error}'),
-                ElevatedButton(
-                  onPressed: () => setState(() {}),
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        }
-        
-        final ordersWithEmail = snapshot.data ?? [];
-        
+
         return RefreshIndicator(
-          onRefresh: () async {
-            setState(() {});
-          },
+          onRefresh: () => provider.fetchAllOrders(),
           child: ListView.builder(
-            itemCount: ordersWithEmail.length,
+            itemCount: provider.allOrders.length,
             itemBuilder: (context, index) {
-              final orderData = ordersWithEmail[index];
-              final order = Order.fromJson(orderData);
-              final userEmail = orderData['user_email'] ?? 'Unknown User';
-              
+              final order = provider.allOrders[index];
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: ExpansionTile(
+                child: ListTile(
                   title: Text('Order #${order.id}'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Customer: $userEmail'),
-                      Text('Total: Rp ${order.total.toStringAsFixed(0)}'),
-                      Text('Tanggal: ${order.createdAt.toString().split(' ')[0]}'),
-                    ],
-                  ),
+                  subtitle: Text('Total: Rp ${order.total.toStringAsFixed(0)}'),
                   trailing: Chip(
                     label: Text(
                       order.status,
@@ -187,67 +151,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     ),
                     backgroundColor: _getStatusColor(order.status),
                   ),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          if (order.status == 'pending')
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: () => _updateOrderStatusDirect(order.id),
-                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                    child: const Text('Setujui'),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: () => _updateOrderStatusDirect(order.id, 'cancelled'),
-                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                    child: const Text('Tolak'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          if (order.status == 'approved')
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () => _updateOrderStatusDirect(order.id, 'shipped'),
-                                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                                child: const Text('Kirim'),
-                              ),
-                            ),
-                          if (order.status == 'shipped')
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () => _updateOrderStatusDirect(order.id, 'completed'),
-                                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                                child: const Text('Selesai'),
-                              ),
-                            ),
-                          const SizedBox(height: 8),
-                          TextButton(
-                            onPressed: () async {
-                              final result = await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => OrderDetailScreen(order: order),
-                                ),
-                              );
-                              if (result == true) {
-                                setState(() {});
-                              }
-                            },
-                            child: const Text('Lihat Detail'),
-                          ),
-                        ],
+                  onTap: () async {
+                    final result = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => OrderDetailScreen(order: order),
                       ),
-                    ),
-                  ],
+                    );
+                    if (result == true) {
+                      provider.fetchAllOrders();
+                    }
+                  },
                 ),
               );
             },
@@ -255,26 +168,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         );
       },
     );
-  }
-
-  Future<String> _getUserEmail(String userId) async {
-    try {
-      print('Fetching email for user ID: $userId');
-      
-      final response = await SupabaseService().client
-          .from('user_profiles')
-          .select('email')
-          .eq('id', userId)
-          .maybeSingle();
-      
-      final email = response?['email'] ?? 'Unknown User';
-      print('Found email: $email for user ID: $userId');
-      
-      return email;
-    } catch (e) {
-      print('Error fetching email for user $userId: $e');
-      return 'Unknown User';
-    }
   }
 
   Color _getStatusColor(String status) {
@@ -378,65 +271,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
     );
   }
 
-  Future<List<Map<String, dynamic>>> _fetchOrdersWithUserEmail() async {
-    try {
-      print('Fetching orders with user emails...');
-      
-      final response = await SupabaseService().client
-          .from('orders')
-          .select('*, user_profiles(email)')
-          .order('created_at', ascending: false);
-      
-      print('Raw response: $response');
-      
-      return (response as List).map<Map<String, dynamic>>((order) {
-        final orderMap = Map<String, dynamic>.from(order);
-        final userProfile = orderMap['user_profiles'];
-        final userEmail = userProfile != null ? userProfile['email'] : 'Unknown User';
-        
-        print('Order ${orderMap['id']}: User ID ${orderMap['user_id']} -> Email: $userEmail');
-        
-        return {
-          ...orderMap,
-          'user_email': userEmail,
-        };
-      }).toList();
-    } catch (e) {
-      print('Error fetching orders with emails: $e');
-      return [];
-    }
-  }
-
-  Future<void> _updateOrderStatusDirect(int orderId, [String newStatus = 'approved']) async {
-    try {
-      await SupabaseService().client
-          .from('orders')
-          .update({'status': newStatus})
-          .eq('id', orderId);
-      
-      setState(() {}); // Refresh UI
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Status berhasil diubah ke $newStatus'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> _deleteSparepart(BuildContext context, Sparepart sparepart) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -460,6 +294,4 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
       await context.read<SparepartProvider>().deleteSparepart(sparepart.id);
     }
   }
-
-
 }
