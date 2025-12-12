@@ -22,14 +22,25 @@ class SparepartListScreen extends StatelessWidget {
 
         return RefreshIndicator(
           onRefresh: () => provider.fetchSpareparts(),
-          child: GridView.builder(
-            padding: const EdgeInsets.all(8),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.7,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount;
+              if (constraints.maxWidth > 1200) {
+                crossAxisCount = 4;
+              } else if (constraints.maxWidth > 600) {
+                crossAxisCount = 2;
+              } else {
+                crossAxisCount = 1;
+              }
+              
+              return GridView.builder(
+                padding: const EdgeInsets.all(8),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: 0.75,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
             itemCount: provider.spareparts.length,
             itemBuilder: (context, index) {
               final sparepart = provider.spareparts[index];
@@ -117,6 +128,7 @@ class SparepartListScreen extends StatelessWidget {
                   ),
                 ),
               );
+            });
             },
           ),
         );
