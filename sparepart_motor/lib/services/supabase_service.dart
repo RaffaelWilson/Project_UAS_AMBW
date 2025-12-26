@@ -19,7 +19,6 @@ class SupabaseService {
   User? get currentUser => client.auth.currentUser;
   bool get isLoggedIn => currentUser != null;
 
-  // Method untuk memastikan real-time connection aktif
   void ensureRealtimeConnection() {
     final channel = client.channel('public:user_profiles');
     if (channel.socket.isConnected) {
