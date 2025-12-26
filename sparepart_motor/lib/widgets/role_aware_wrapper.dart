@@ -25,13 +25,11 @@ class _RoleAwareWrapperState extends State<RoleAwareWrapper> {
         print('Is Admin: ${auth.isAdmin}');
         print('Current Role: ${auth.userProfile?.role}');
         
-        // Check jika user tidak login
         if (!auth.isLoggedIn) {
           _previousRole = null;
           return const LoginScreen();
         }
 
-        // Force reload profile jika belum ada
         if (auth.userProfile == null) {
           print('Profile is null, forcing reload...');
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -51,12 +49,11 @@ class _RoleAwareWrapperState extends State<RoleAwareWrapper> {
           );
         }
 
-        // Check perubahan role
         final currentRole = auth.userProfile?.role;
         if (_previousRole != null && 
             _previousRole != currentRole && 
             currentRole != null) {
-          // Tampilkan notifikasi perubahan role
+
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -71,7 +68,6 @@ class _RoleAwareWrapperState extends State<RoleAwareWrapper> {
         }
         _previousRole = currentRole;
 
-        // Redirect berdasarkan role
         print('Redirecting to: ${auth.isAdmin ? 'AdminDashboard' : 'HomeScreen'}');
         return auth.isAdmin ? const AdminDashboardScreen() : const HomeScreen();
       },

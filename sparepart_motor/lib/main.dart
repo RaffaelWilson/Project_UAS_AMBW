@@ -32,11 +32,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Listen untuk perubahan auth state
+
     SupabaseService().client.auth.onAuthStateChange.listen((data) {
       final event = data.event;
       if (event == AuthChangeEvent.signedIn) {
-        // Reload profile saat user sign in
+      
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             context.read<AuthProvider>().reloadUserProfile();

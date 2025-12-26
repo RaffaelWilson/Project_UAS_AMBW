@@ -87,7 +87,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     children: [
                       Text('Total: Rp ${order.total.toStringAsFixed(0)}'),
                       Text(
-                        DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt),
+                        DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt.toLocal()),
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
