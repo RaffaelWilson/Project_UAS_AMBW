@@ -31,7 +31,7 @@ class AuthProvider with ChangeNotifier {
         password: password,
       );
       
-      // Force reload profile multiple times untuk memastikan data ter-update
+      
       await _loadUserProfile();
       await Future.delayed(const Duration(milliseconds: 500));
       await _loadUserProfile();
@@ -145,10 +145,10 @@ class AuthProvider with ChangeNotifier {
     final user = _supabase.currentUser;
     if (user == null) return;
 
-    // Pastikan real-time connection aktif
+    
     _supabase.ensureRealtimeConnection();
 
-    // Real-time subscription untuk perubahan role
+    
     try {
       _profileSubscription = _supabase.client
           .from('user_profiles')
@@ -170,14 +170,13 @@ class AuthProvider with ChangeNotifier {
             },
             onError: (error) {
               print('Real-time subscription error: $error');
-              // Fallback ke periodic check jika real-time gagal
+            
             },
           );
     } catch (e) {
       print('Failed to start real-time subscription: $e');
     }
 
-    // Periodic check setiap 15 detik sebagai backup
     _roleCheckTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       _checkRoleUpdate();
     });
